@@ -5,14 +5,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username; // Optional for OAuth users
-    private String firstname; // Optional for OAuth users
-    private String lastname; // Optional for OAuth users
+    private String firstName; // Optional for OAuth users
+    private String lastName; // Optional for OAuth users
     private String email; // Common for all users
     private String password; // Optional for OAuth users
     private String provider; // e.g., "google", "facebook", "local"
@@ -21,6 +23,9 @@ public class User {
     private int age;
     private float currentWeight;
     private String howDidYouFindUs;
+
+    private String resetPasswordToken;
+    private LocalDateTime resetPasswordTokenExpiry;
 
     // getters and setters
 
@@ -41,20 +46,20 @@ public class User {
         this.username = username;
     }
 
-    public String getFirstname() {
-        return firstname;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public String getLastname() {
-        return lastname;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {
@@ -119,6 +124,23 @@ public class User {
 
     public void setHowDidYouFindUs(String howDidYouFindUs) {
         this.howDidYouFindUs = howDidYouFindUs;
+    }
+
+
+    public String getResetPasswordToken() {
+        return resetPasswordToken;
+    }
+
+    public void setResetPasswordToken(String resetPasswordToken) {
+        this.resetPasswordToken = resetPasswordToken;
+    }
+
+    public LocalDateTime getResetPasswordTokenExpiry() {
+        return resetPasswordTokenExpiry;
+    }
+
+    public void setResetPasswordTokenExpiry(LocalDateTime resetPasswordTokenExpiry) {
+        this.resetPasswordTokenExpiry = resetPasswordTokenExpiry;
     }
 }
 

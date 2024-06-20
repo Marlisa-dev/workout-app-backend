@@ -1,6 +1,8 @@
 package com.marlisa.workout_app_backend.controller;
 //Handles the forgot password and reset password functionality
 
+import com.marlisa.workout_app_backend.dto.ForgotPasswordRequest;
+import com.marlisa.workout_app_backend.dto.ResetPasswordRequest;
 import com.marlisa.workout_app_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,10 @@ package com.marlisa.workout_app_backend.controller;
 //Handles registration for new users using form fill.
 
 
+import com.marlisa.workout_app_backend.dto.SignupRequest;
+import com.marlisa.workout_app_backend.entity.User;
 import com.marlisa.workout_app_backend.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +30,7 @@ public class UserRegistrationController {
         user.setPassword(signupRequest.getPassword()); // Hash the password
         user.setGender(signupRequest.getGender());
         user.setAge(signupRequest.getAge());
-        user.setWeight(signupRequest.getWeight());
+        user.setCurrentWeight(signupRequest.getWeight());
         user.setHowDidYouFindUs(signupRequest.getHowDidYouFindUs());
         user.setProvider("local");
 

@@ -2,7 +2,9 @@ package com.marlisa.workout_app_backend.controller;
 //Handles general user-related operations like fetching user details, updating user profile, delete user etc.
 
 
+import com.marlisa.workout_app_backend.dto.UserUpdateRequest;
 import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.security.UserDetailsImpl;
 import com.marlisa.workout_app_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
