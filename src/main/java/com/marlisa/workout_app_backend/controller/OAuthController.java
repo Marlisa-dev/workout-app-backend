@@ -1,12 +1,16 @@
 package com.marlisa.workout_app_backend.controller;
 //Handles OAuth login for Facebook and Google.
 
+import com.marlisa.workout_app_backend.dto.JwtAuthenticationResponse;
 import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.security.JwtTokenProvider;
 import com.marlisa.workout_app_backend.service.OAuthService;
 import com.marlisa.workout_app_backend.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
 import java.util.Map;
 
 @RestController
@@ -29,6 +32,9 @@ public class OAuthController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtTokenProvider tokenProvider;
 
     @GetMapping("/login/{provider}")
     public void oauthLogin(@PathVariable String provider, HttpServletResponse response) throws IOException {
@@ -48,6 +54,10 @@ public class OAuthController {
 
         // Create or update user in your system
         User user = userService.findOrCreateUser(email, firstName, lastName, provider, attributes);
+
+        // Authenticate user and set context
+        Authentication authentication = userService.authenticateUser(user);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Generate JWT token for the user and return it
         String jwt = userService.generateToken(user);

@@ -4,12 +4,18 @@ import com.marlisa.workout_app_backend.dto.SignupRequest;
 import com.marlisa.workout_app_backend.dto.UserUpdateRequest;
 import com.marlisa.workout_app_backend.entity.User;
 import com.marlisa.workout_app_backend.repository.UserRepository;
+import com.marlisa.workout_app_backend.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +31,9 @@ public class UserService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private UserDetailsServiceImpl userDetailsService;
 
     public User registerUser(SignupRequest signupRequest) {
         User user = new User();
@@ -106,6 +115,10 @@ public class UserService {
         // Save the token and its expiration time in the database
         // Implement logic to save the token (not shown here, you need to add token management)
 
+        user.setResetPasswordToken(token);
+        user.setResetPasswordTokenExpiry(LocalDateTime.now().plusHours(24));
+        userRepository.save(user);
+
         String resetUrl = "http://localhost:8080/api/auth/reset-password?token=" + token;
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
@@ -118,13 +131,33 @@ public class UserService {
         // Validate the token and get the user associated with it
         // Implement logic to validate the token (not shown here, you need to add token management)
 
-        User user = userRepository.findByResetPasswordToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid token"));
+        Optional<User> userOptional = userRepository.findByResetPasswordToken(token);
+        if (!userOptional.isPresent()) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        User user = userOptional.get();
+        if (user.getResetPasswordTokenExpiry().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Token expired");
+        }
+
+//        User user = userRepository.findByResetPasswordToken(token)
+//                .orElseThrow(() -> new RuntimeException("Invalid token"));
 
         user.setPassword(passwordEncoder.encode(newPassword));
         // Remove the reset password token from the database
         // Implement logic to remove the token (not shown here, you need to add token management)
+        user.setResetPasswordToken(null);
+        user.setResetPasswordTokenExpiry(null);
 
         userRepository.save(user);
     }
+
+    public Authentication authenticateUser(User user) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
 }
