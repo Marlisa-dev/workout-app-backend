@@ -1,6 +1,6 @@
 package com.marlisa.workout_app_backend.service;
 
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import com.marlisa.workout_app_backend.repository.UserRepository;
 
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -43,18 +43,18 @@ public class OAuthService {
         String firstName = (String) attributes.get(getFirstNameAttributeKey(provider));
         String lastName = (String) attributes.get(getLastNameAttributeKey(provider));
 
-        Optional<User> existingUser = userRepository.findByEmail(email);
-        User user;
+        Optional<AppUser> existingUser = userRepository.findByEmail(email);
+        AppUser appUser;
         if (existingUser.isPresent()) {
-            user = existingUser.get();
+            appUser = existingUser.get();
         } else {
-            user = new User();
-            user.setEmail(email);
-            user.setFirstName(firstName);
-            user.setLastName(lastName);
-            user.setProvider(provider);
-            user.setProviderId((String) attributes.get("sub")); // Example for Google, might need a different attribute for Facebook
-            userRepository.save(user);
+            appUser = new AppUser();
+            appUser.setEmail(email);
+            appUser.setFirstName(firstName);
+            appUser.setLastName(lastName);
+            appUser.setProvider(provider);
+            appUser.setProviderId((String) attributes.get("sub")); // Example for Google, might need a different attribute for Facebook
+            userRepository.save(appUser);
         }
 
         return oAuth2User;

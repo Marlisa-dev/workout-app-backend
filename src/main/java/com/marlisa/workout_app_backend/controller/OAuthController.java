@@ -2,7 +2,7 @@ package com.marlisa.workout_app_backend.controller;
 //Handles OAuth login for Facebook and Google.
 
 import com.marlisa.workout_app_backend.dto.JwtAuthenticationResponse;
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import com.marlisa.workout_app_backend.security.JwtTokenProvider;
 import com.marlisa.workout_app_backend.service.OAuthService;
 import com.marlisa.workout_app_backend.service.UserService;
@@ -53,14 +53,14 @@ public class OAuthController {
         String lastName = (String) attributes.get("family_name");
 
         // Create or update user in your system
-        User user = userService.findOrCreateUser(email, firstName, lastName, provider, attributes);
+        AppUser appUser = userService.findOrCreateUser(email, firstName, lastName, provider, attributes);
 
         // Authenticate user and set context
-        Authentication authentication = userService.authenticateUser(user);
+        Authentication authentication = userService.authenticateUser(appUser);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Generate JWT token for the user and return it
-        String jwt = userService.generateToken(user);
+        String jwt = userService.generateToken(appUser);
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 }

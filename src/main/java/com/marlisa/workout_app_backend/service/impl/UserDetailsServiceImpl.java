@@ -1,6 +1,6 @@
 package com.marlisa.workout_app_backend.service.impl;
 
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import com.marlisa.workout_app_backend.repository.UserRepository;
 import com.marlisa.workout_app_backend.security.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email)
+        AppUser appUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
-        return new UserDetailsImpl(user);
+        return new UserDetailsImpl(appUser);
     }
 }

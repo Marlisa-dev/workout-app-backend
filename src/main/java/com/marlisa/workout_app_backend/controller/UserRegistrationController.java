@@ -3,7 +3,7 @@ package com.marlisa.workout_app_backend.controller;
 
 
 import com.marlisa.workout_app_backend.dto.SignupRequest;
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import com.marlisa.workout_app_backend.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +22,19 @@ public class UserRegistrationController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignupRequest signupRequest) {
-        User user = new User();
-        user.setFirstName(signupRequest.getFirstName());
-        user.setLastName(signupRequest.getLastName());
-        user.setUsername(signupRequest.getUsername());
-        user.setEmail(signupRequest.getEmail());
-        user.setPassword(signupRequest.getPassword()); // Hash the password
-        user.setGender(signupRequest.getGender());
-        user.setAge(signupRequest.getAge());
-        user.setCurrentWeight(signupRequest.getWeight());
-        user.setHowDidYouFindUs(signupRequest.getHowDidYouFindUs());
-        user.setProvider("local");
+        AppUser appUser = new AppUser();
+        appUser.setFirstName(signupRequest.getFirstName());
+        appUser.setLastName(signupRequest.getLastName());
+        appUser.setUsername(signupRequest.getUsername());
+        appUser.setEmail(signupRequest.getEmail());
+        appUser.setPassword(signupRequest.getPassword()); // Hash the password
+        appUser.setGender(signupRequest.getGender());
+        appUser.setAge(signupRequest.getAge());
+        appUser.setCurrentWeight(signupRequest.getWeight());
+        appUser.setHowDidYouFindUs(signupRequest.getHowDidYouFindUs());
+        appUser.setProvider("local");
 
-        userService.saveUser(user);
+        userService.saveUser(appUser);
         return ResponseEntity.ok("User registered successfully");
     }
 }

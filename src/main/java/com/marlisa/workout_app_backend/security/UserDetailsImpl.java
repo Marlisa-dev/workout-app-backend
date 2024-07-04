@@ -1,6 +1,6 @@
 package com.marlisa.workout_app_backend.security;
 
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,10 +9,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class UserDetailsImpl implements UserDetails {
-    private final User user;
+    private final AppUser appUser;
 
-    public UserDetailsImpl(User user) {
-        this.user = user;
+    public UserDetailsImpl(AppUser appUser) {
+        this.appUser = appUser;
     }
 
     @Override
@@ -22,12 +22,12 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return appUser.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return appUser.getEmail();
     }
 
     @Override
@@ -51,19 +51,19 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public Long getId() {
-        return user.getId();
+        return appUser.getId();
     }
 
     public String getFirstName() {
-        return user.getFirstName();
+        return appUser.getFirstName();
     }
 
     public String getLastName() {
-        return user.getLastName();
+        return appUser.getLastName();
     }
 
     public String getEmail() {
-        return user.getEmail();
+        return appUser.getEmail();
     }
 
     // Additional user-specific methods can be added here

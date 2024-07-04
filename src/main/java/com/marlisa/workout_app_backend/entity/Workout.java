@@ -14,7 +14,7 @@ public class Workout {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private AppUser appUser;
 
     @ManyToMany
     @JoinTable(

@@ -3,7 +3,7 @@ package com.marlisa.workout_app_backend.controller;
 
 
 import com.marlisa.workout_app_backend.dto.UserUpdateRequest;
-import com.marlisa.workout_app_backend.entity.User;
+import com.marlisa.workout_app_backend.entity.AppUser;
 import com.marlisa.workout_app_backend.security.UserDetailsImpl;
 import com.marlisa.workout_app_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +22,16 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         Long userId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
-        User user = userService.getUserById(userId);
-        return ResponseEntity.ok(user);
+        AppUser appUser = userService.getUserById(userId);
+        return ResponseEntity.ok(appUser);
     }
 
     // Endpoint to update user details
     @PostMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateRequest request, Authentication authentication) {
         Long userId = ((UserDetailsImpl) authentication.getPrincipal()).getId();
-        User updatedUser = userService.updateUser(userId, request);
-        return ResponseEntity.ok(updatedUser);
+        AppUser updatedAppUser = userService.updateUser(userId, request);
+        return ResponseEntity.ok(updatedAppUser);
     }
 
     // Optional: Endpoint to delete user account
