@@ -1,5 +1,7 @@
 package com.marlisa.workout_app_backend.config;
 
+import com.marlisa.workout_app_backend.security.JwtAuthenticationFilter;
+import com.marlisa.workout_app_backend.security.JwtTokenProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,41 +12,32 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
+    private final JwtTokenProvider tokenProvider;
 
-    public SecurityConfig(UserDetailsService userDetailsService) {
+    public SecurityConfig(UserDetailsService userDetailsService, JwtTokenProvider tokenProvider) {
         this.userDetailsService = userDetailsService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider);
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/auth/**", "/api/oauth/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(withDefaults())
-                .formLogin(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth2LoginConfigurer ->
-                        oauth2LoginConfigurer
-                                .defaultSuccessUrl("/api/oauth/success", true)
-                                .failureUrl("/login?error=true")
-                )
-                .logout(logout -> logout.permitAll())
-                .userDetailsService(userDetailsService);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -52,15 +45,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public OAuth2AuthorizedClientManager authorizedClientManager(
-            ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientRepository authorizedClientRepository) {
-
-        return new DefaultOAuth2AuthorizedClientManager(
-                clientRegistrationRepository, authorizedClientRepository);
     }
 
     @Bean
