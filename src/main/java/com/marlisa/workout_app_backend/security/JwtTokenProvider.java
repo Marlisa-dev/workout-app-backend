@@ -1,10 +1,11 @@
 package com.marlisa.workout_app_backend.security;
 
-import com.marlisa.workout_app_backend.entity.AppUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,30 +20,30 @@ public class JwtTokenProvider {
     private int jwtExpirationInMs;
 
     public String generateToken(Authentication authentication) {
-        AppUser appUserPrincipal = (AppUser) authentication.getPrincipal();
+        UserDetails userPrincipal = (UserDetails) authentication.getPrincipal();
 
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 
         return Jwts.builder()
-                .setSubject(Long.toString(appUserPrincipal.getId()))
+                .setSubject(userPrincipal.getUsername())
                 .setIssuedAt(new Date())
                 .setExpiration(expiryDate)
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(SignatureAlgorithm.HS512, Base64.decodeBase64(jwtSecret))
                 .compact();
     }
 
-    public Long getUserIdFromJWT(String token) {
-        return Long.parseLong(Jwts.parser()
-                .setSigningKey(jwtSecret)
+    public String getUsernameFromJWT(String token) {
+        return Jwts.parser()
+                .setSigningKey(Base64.decodeBase64(jwtSecret))
                 .parseClaimsJws(token)
                 .getBody()
-                .getSubject());
+                .getSubject();
     }
 
     public boolean validateToken(String authToken) {
         try {
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(Base64.decodeBase64(jwtSecret)).parseClaimsJws(authToken);
             return true;
         } catch (Exception ex) {
             // Handle exceptions (expired token, malformed token, etc.)

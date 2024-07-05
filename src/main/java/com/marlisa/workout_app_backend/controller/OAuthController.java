@@ -15,12 +15,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
 import java.util.Map;
 
 @RestController
@@ -60,7 +54,7 @@ public class OAuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Generate JWT token for the user and return it
-        String jwt = userService.generateToken(appUser);
+        String jwt = tokenProvider.generateToken(authentication);
         return ResponseEntity.ok(new JwtAuthenticationResponse(jwt));
     }
 }
